@@ -34,43 +34,61 @@ Instead of disjointed daily exercises, students work on a single continuous pipe
 
 ---
 
+## Platform Verification Notes (validated June 2026)
+
+These platform facts were verified in June 2026 and supersede any earlier naming. See `Curriculum_Mapping_2026.md` for the day-by-day mapping.
+
+| Platform | What changed / what to teach |
+| :--- | :--- |
+| **GCP DE** | Dataplex renamed **Knowledge Catalog** (Apr 2026). BigQuery legacy SQL sunset June 2026 — teach **GoogleSQL only**. **BigQuery Data Engineering Agent** now GA (natural-language pipeline building) — great Week 6 demo. Dataflow lineage in Knowledge Catalog is GA. |
+| **GCP AI** | Vertex AI rebranded **Gemini Enterprise Agent Platform**; unified **google-genai SDK** replaces the deprecated `google-generativeai` package. Current models: Gemini 2.5 family (stable) and 3.x. Gemini callable from BigQuery SQL (`ML.GENERATE_TEXT` / AI functions) — DE-native GenAI pattern. |
+| **AWS DE** | Story is now **SageMaker Lakehouse + S3 Tables (managed Iceberg) + Glue**. EMR still valid for the Spark deployment day; mention S3 Tables when teaching Iceberg. |
+| **Snowflake** | **dbt Projects on Snowflake** runs dbt natively (incl. Fusion engine) — show after local dbt. **Openflow** (managed NiFi) = ingestion story, mention conceptually. Cortex: **AISQL functions** (COMPLETE, CLASSIFY, SUMMARIZE…). Use current naming in slides. |
+| **dbt** | **Fusion engine** (Rust, 30× faster parse) + official **VS Code extension** (requires Fusion, free). Teach dbt with Fusion + VS Code; concepts identical to Core. |
+| **Databricks** | Community Edition is retired → **Free Edition** (serverless). Delta Lake, notebooks, SQL, basic Unity Catalog all work. Jobs/pipelines now branded **Lakeflow**. Certifications are out of scope for this cohort. |
+
+---
+
 ## Week-by-Week Curriculum Breakdown
 
 ---
 
-### Week 1 — Data & Cloud Foundations
+### Week 1 — Data & Cloud Foundations *(June 22–26)*
 
-**Theme:** Set the stage — what is data engineering, why does cloud matter, and how do we set up?
+**Theme:** Set the stage — what is data engineering, why does cloud matter, and how do we set up — ending with each team's pipeline architecture for the 8-week NYC Taxi project thread.
 
 | Day | Topic | Details / Labs |
 | :--- | :--- | :--- |
 | **Day 1** | Data Primer & DE Roles | Types of data (structured, semi-structured, unstructured), batch vs. streaming concepts, the Modern Data Stack, and roles in DE. |
 | **Day 2** | Cloud Fundamentals | Core concepts: IaaS vs. PaaS vs. SaaS. Conceptual comparison of GCP vs. AWS services. IAM basics and billing management. |
 | **Day 3** | Environment Setup | Setting up VS Code and GitHub Codespaces. Installing Python, virtual environments (`venv`), pip, and Git basics. Setting up cloud accounts. |
-| **Day 4** | Hands-On Cloud Storage | Lab: Spin up a GCP project, navigate the console, create and configure a Google Cloud Storage (GCS) bucket, and compare it conceptually to AWS S3. |
-| **Day 5** | Architecture & Pipeline Thread | **Data Pipeline Introduction:** Overview of the NYC Taxi (or chosen client) dataset. Lab: Design a conceptual data flow diagram using Draw.io showing raw data landing in GCS and loading into BigQuery. |
+| **Day 4** | Hands-On Cloud Storage | Lab: Create and secure a GCS bucket (console + CLI), configure lifecycle rules and versioning, compare to AWS S3. Teams design their pipeline bucket/prefix convention. |
+| **Day 5** | Data Architectures & Pipeline Thread | Core patterns: Lambda, Kappa, and Medallion (Bronze/Silver/Gold). Architecture diagramming grammar (Draw.io). **Pipeline kickoff:** NYC Taxi dataset introduction. Lab: Teams design their end-to-end conceptual pipeline architecture — the living document they revise in Weeks 3, 5, and 7. |
 
-**Weekly Deliverable:** Conceptual data pipeline design document and architecture diagram for the high-volume data use case.
+**Weekly Deliverable:** Team pipeline architecture diagram (Draw.io) + design narrative for the NYC Taxi pipeline.
 
 ---
 
-### Week 2 — Developer Foundations & Python Coding (AI-Free Zone)
+### Week 2 — Developer Foundations *(June 29–July 2 · 4 days)*
+
+> [!IMPORTANT]
+> **Holiday:** July 4, 2026 falls on a Saturday → observed **Friday, July 3**. Week 2 runs Monday–Thursday only (4 days). The AI-Free Zone (no Copilot/LLM-generated code) applies to all of **Weeks 1–4**, not just this week.
 
 **Theme:** Developer foundations — how data engineers write, version, and execute code by hand.
 
 | Day | Topic | Details / Labs |
 | :--- | :--- | :--- |
-| **Day 1** | Data Architecture | Core architectures: Batch vs. Streaming, Lambda vs. Kappa, and the Medallion Architecture (Bronze, Silver, Gold). |
-| **Day 2** | Linux CLI & Git Collaboration | Shell basics: filesystem commands, pipes (`\|`), searching (`grep`), cron. Git command line: `git init/clone/commit/push`, branching, PRs, and resolving conflicts. |
-| **Day 3** | Python Foundations for DE | Core Python coding: variables, standard data types, collections (lists, dicts, tuples, sets), control flow (loops, conditionals), and custom functions. |
-| **Day 4** | Intermediate Python & File I/O | Object-Oriented Programming (OOP) basics (classes/methods for data models), error handling, reading/writing CSV/JSON files, and making API requests using the `requests` library. |
-| **Day 5** | Pandas & Polars for DE | Intro to pandas DataFrames (reading files, cleaning, filtering, joins, aggregations). Lab: Land data in GCS using Python. 30-min comparison of pandas vs. Polars (syntax and speed). Brief demo of AWS serverless concepts (Lambda, S3 triggers) as a secondary cloud overview. |
+| **Day 1** | Linux CLI & Git Collaboration | Shell basics: filesystem commands, pipes (`\|`), searching (`grep`), cron. Git command line: `git init/clone/commit/push`, branching, PRs, and resolving conflicts. |
+| **Day 2** | Python Foundations for DE | Core Python coding: variables, standard data types, collections (lists, dicts, tuples, sets), control flow (loops, conditionals), and custom functions. |
+| **Day 3** | Intermediate Python & File I/O | Object-Oriented Programming (OOP) basics (classes/methods for data models), error handling, reading/writing CSV/JSON files, and making API requests using the `requests` library. |
+| **Day 4** | Pandas & Polars for DE | Intro to pandas DataFrames (reading files, cleaning, filtering, joins, aggregations). Lab: Pull API data, clean with pandas, and land in GCS. 30-min comparison of pandas vs. Polars (syntax and speed). |
+| **Day 5** | *July 3 — Holiday (observed July 4)* | *No class.* |
 
 **Weekly Deliverable:** A hand-written Python script that pulls mock metadata from a public API, performs basic cleaning in pandas, and uploads it to a GCP GCS bucket.
 
 ---
 
-### Week 3 — Modern Data Warehousing & SQL (GCP-First)
+### Week 3 — Modern Data Warehousing & SQL (GCP-First) *(July 6–10)*
 
 **Theme:** Storage and querying with GCP as the primary workhorse.
 
@@ -78,15 +96,15 @@ Instead of disjointed daily exercises, students work on a single continuous pipe
 | :--- | :--- | :--- |
 | **Day 1** | Modern Data Warehousing | ETL vs. ELT, data lakes vs. data warehouses vs. lakehouses. Schema design: star schemas, snowflake schemas, and columnar storage. |
 | **Day 2** | GCP BigQuery Foundations | BQ Architecture: storage vs. compute decoupling. Managing datasets and tables (internal vs. external), partitioning, clustering, and console query execution. |
-| **Day 3** | SQL Primer (BigQuery) | Writing queries *by hand*: SELECT, WHERE, JOINs, GROUP BY, aggregations, and HAVING. Querying the high-volume data loaded into BigQuery. |
+| **Day 3** | SQL Primer (BigQuery) | Writing queries *by hand* in **GoogleSQL only** (legacy SQL sunset June 2026): SELECT, WHERE, JOINs, GROUP BY, aggregations, and HAVING. Querying the high-volume data loaded into BigQuery. |
 | **Day 4** | Ingestion & Batch Pipelines | Event streaming vs. batch ingestion. Lab: Spin up GCP Pub/Sub topics. Introduction to Apache Beam concepts and running a GCP Dataflow batch pipeline (loading GCS files into BigQuery). |
-| **Day 5** | Orchestration & GCP Governance | Core orchestration concepts. Lab: Introduction to Cloud Composer (Airflow) DAGs. **GCP Security & Governance:** IAM roles, Dataplex cataloging, and PII/PHI column-level masking in BigQuery. |
+| **Day 5** | Orchestration & GCP Governance | Core orchestration concepts. Lab: Introduction to Cloud Composer (Airflow) DAGs. **GCP Security & Governance:** IAM roles, **Knowledge Catalog** (formerly Dataplex) data cataloging, and PII/PHI column-level masking in BigQuery. |
 
 **Weekly Deliverable:** An end-to-end mini-pipeline: Pub/Sub → Dataflow (scaffolded) → BigQuery, with SQL queries summarizing the loaded dataset, and security policies applied.
 
 ---
 
-### Week 4 — Snowflake, dbt & Advanced SQL
+### Week 4 — Snowflake, dbt & Advanced SQL *(July 13–17)*
 
 **Theme:** The analytical warehouse layer — transformations, advanced SQL, and data modeling.
 
@@ -94,82 +112,85 @@ Instead of disjointed daily exercises, students work on a single continuous pipe
 | :--- | :--- | :--- |
 | **Day 1** | Snowflake Architecture | Introduction to Snowflake: decoupled storage and compute, virtual warehouses, databases, schemas, and RBAC roles. **Cost Optimization:** Warehouse sizing, auto-suspend, and table types (permanent, transient, temporary). |
 | **Day 2** | Advanced SQL & Performance | Analytical SQL: window functions (`ROW_NUMBER`, `LEAD`/`LAG`, running totals), CTEs, and query performance tuning (pruning, clustering, and monitoring query profile costs) in BigQuery & Snowflake. |
-| **Day 3** | dbt Core & Integration | Introduction to dbt (Data Build Tool). Lab: Set up a local dbt project, define sources and models, write transformations on Snowflake data, and configure basic tests (unique, not_null, accepted_values). |
+| **Day 3** | dbt (Fusion) & Integration | Introduction to dbt (Data Build Tool) using the **Fusion engine + official VS Code extension**. Lab: Set up a dbt project, define sources and models, write transformations on Snowflake data, and configure basic tests (unique, not_null, accepted_values). Demo **dbt Projects on Snowflake** (native dbt) after the local project. |
 | **Day 4** | Advanced dbt & CI/CD | Advanced dbt modeling: incremental models, custom macros, seeds, and snapshots. Lab: Build a **GitHub Actions CI/CD workflow** that automatically runs and tests dbt models on pull requests. |
-| **Day 5** | Snowflake GenAI & Governance | Cortex LLM functions (COMPLETE, SUMMARIZE, TRANSLATE) and Document AI. Lab: Build an LLM-powered data enrichment pipeline to summarize text columns. **Snowflake Governance:** column-level masking policies, tagging sensitive data. |
+| **Day 5** | Snowflake GenAI & Governance | Cortex **AISQL functions** (COMPLETE, CLASSIFY, SUMMARIZE…) and Document AI. Lab: Build an LLM-powered data enrichment pipeline to summarize text columns. **Snowflake Governance:** column-level masking policies, tagging sensitive data. |
 
 **Weekly Deliverable:** A dbt project on Snowflake with comprehensive data tests, a GitHub Actions CI/CD validation workflow, and a Cortex LLM-enriched model.
 
 ---
 
-### Week 5 — Big Data & PySpark ETL (Databricks, Dataproc & AWS EMR)
+### Week 5 — Big Data & PySpark ETL (Databricks) *(July 20–24)*
 
 **Theme:** Distributed data processing, lakehouse formats, and deploying production Spark jobs.
 
 > [!NOTE]
-> **Pedagogical Strategy:** We use **Databricks (Community Edition)** as a zero-config, interactive environment for learning core Spark concepts and PySpark syntax. Once students have mastered these basics, we transition to deploying their code as production batch jobs on managed cloud clusters: **GCP Dataproc** (primary cloud) and **AWS EMR** (secondary cloud).
+> **Pedagogical Strategy:** **Databricks Free Edition** (serverless) is the platform for all hands-on work this week — learning, development, and production job deployment. **GCP Dataproc** and **AWS EMR** are covered conceptually as important industry patterns: students study and annotate the equivalent submission commands to understand portability, but no live clusters are created on those platforms. The core lesson is that the same PySpark script runs on Databricks, Dataproc, and EMR without code changes.
 
 | Day | Topic | Details / Labs |
 | :--- | :--- | :--- |
 | **Day 1** | Big Data & Spark Foundations | Distributed computing concepts, Spark cluster architecture (Driver vs. Executor), Spark Session, RDDs, and Spark DataFrames. |
-| **Day 2** | Databricks for Learning | Databricks Community Edition setup, cluster profiles, notebooks, and writing basic PySpark DataFrame transformations (select, filter, basic functions). |
-| **Day 3** | PySpark & Lakehouse Formats | Complex transformations (joins, aggregations, window functions). Introduction to modern lakehouse formats: Delta Lake and Apache Iceberg (ACID transactions, time travel, schema evolution). |
-| **Day 4** | Deploying on GCP Dataproc | **Production Deployment (GCP):** Packaging PySpark code into standalone scripts. Lab: Upload PySpark scripts and data to GCS, spin up a GCP Dataproc cluster, submit the Spark job, and monitor execution. |
-| **Day 5** | Deploying on AWS EMR (Secondary) | **Production Deployment (AWS):** Translating the workflow to the secondary cloud. Lab: Upload scripts to S3, configure and submit jobs to an **AWS EMR (Elastic MapReduce)** cluster. Overview of Dataproc Serverless. |
+| **Day 2** | Databricks & PySpark Essentials | **Databricks Free Edition** (serverless) setup, notebooks, and writing basic PySpark DataFrame transformations (select, filter, basic functions). |
+| **Day 3** | PySpark & Lakehouse Formats | Complex transformations (joins, aggregations, window functions). Introduction to modern lakehouse formats: Delta Lake and Apache Iceberg (ACID transactions, time travel, schema evolution); mention **AWS S3 Tables** (managed Iceberg) when teaching Iceberg. |
+| **Day 4** | Production Spark on Databricks | Packaging PySpark notebooks into standalone scripts (argparse, logging, `if __name__ == "__main__"`). Deploy as a **Databricks Job (Lakeflow)**. Conceptual walkthrough of equivalent Dataproc and EMR submission — same script, different wrapper. |
+| **Day 5** | Choosing Your Engine | Portability proof: same `etl_trips.py` runs on Databricks, Dataproc, and EMR without code changes. Serverless Spark overview. Engine decision map. Week 5 deliverable shipped. |
 
-**Weekly Deliverable:** A PySpark ETL script developed in Databricks, packaged, and executed as a production batch job on a GCP Dataproc cluster, reading from GCS and writing to a Delta/Iceberg table.
+**Weekly Deliverable:** A PySpark ETL script developed and deployed as a Databricks Job, with a portability analysis showing how the same script maps to Dataproc and EMR, and a Delta Lake lab demonstrating ACID transactions and time travel.
 
 ---
 
-### Week 6 — NLP, LLMs, GenAI & GitHub Copilot
+### Week 6 — NLP, LLMs, GenAI & GitHub Copilot *(July 27–31)*
 
 **Theme:** AI engineering and introducing AI coding assistants to accelerate development.
 
 | Day | Topic | Details / Labs |
 | :--- | :--- | :--- |
 | **Day 1** | GenAI Foundations | Landscape: Generative AI ecosystem, Foundation Models, LLM architectures, tokenization, embeddings, and basic prompt engineering. |
-| **Day 2** | Python API Integration | Programmatic AI: accessing LLMs via REST APIs, google-generativeai SDK, and LangChain high-level concepts. |
-| **Day 3** | GCP Vertex AI (MLOps) | Vertex AI platform overview. Tie to pipeline: DE's role in ML (feeding clean datasets to models, deploying AutoML models, and consuming predictive outputs, e.g., taxi demand forecasting). |
-| **Day 4** | Applied NLP on GCP | Gemini API for text generation, classification, and embeddings. Lab: Classify comments or notes and extract metadata using Vertex AI Gemini API. |
-| **Day 5** | GitHub Copilot for DE | **Introducing Copilot:** Setup, inline suggestions, Copilot Chat, and Agent Mode. Best practices: **Prompt/Context Engineering for DE** and **Rigorous Code Review/Validation workflows** (avoiding AI dependency bugs). |
+| **Day 2** | Python API Integration | Programmatic AI: accessing LLMs via REST APIs, **google-genai SDK** (unified; the deprecated `google-generativeai` package is not used), and LangChain high-level concepts. |
+| **Day 3** | Vertex AI / Gemini Enterprise Agent Platform (MLOps) | Platform overview (Vertex AI is now branded **Gemini Enterprise Agent Platform**). Tie to pipeline: DE's role in ML (feeding clean datasets to models, deploying AutoML models, and consuming predictive outputs, e.g., taxi demand forecasting). |
+| **Day 4** | Applied NLP on GCP | Gemini API for text generation, classification, and embeddings. Lab: Classify comments or notes and extract metadata using the Gemini API — and call Gemini from **BigQuery SQL (`ML.GENERATE_TEXT` / AI functions)** for the DE-native pattern. |
+| **Day 5** | GitHub Copilot for DE | **Introducing Copilot:** Setup, inline suggestions, Copilot Chat, and Agent Mode. Best practices: **Prompt/Context Engineering for DE** and **Rigorous Code Review/Validation workflows** (avoiding AI dependency bugs). Demo the **BigQuery Data Engineering Agent** (natural-language pipeline building, now GA). |
 
 **Weekly Deliverable:** An LLM-powered pipeline component (built using Copilot assistance but reviewed/debugged by hand) that auto-tags records based on Gemini classification.
 
 ---
 
-### Week 7 — BI, Visualization & Python Data Apps
+### Week 7 — BI, Visualization & Python Data Apps *(August 3–7)*
 
 **Theme:** From data to decisions — business intelligence dashboards and programmatic data apps.
 
 > [!NOTE]
-> **Client Tool Selection:** Days 2 and 3 are designated as client choice days. The client will select **two BI tools** to focus on from the following options: **Looker** (Primary GCP), **Tableau** (industry standard), **Strategy** (formerly MicroStrategy), or **ThoughtSpot** (AI-powered analytics).
+> **Confirmed BI Tool Selection (Hartford):**
+> - **Day 2 — Tableau** (primary tool, industry standard, Hartford-deployed)
+> - **Day 3 — ThoughtSpot** (AI-powered search analytics)
+> - **Day 4 — Looker** (optional, time-permitting; free tier available via Google account)
 
 | Day | Topic | Details / Labs |
 | :--- | :--- | :--- |
 | **Day 1** | Storytelling & Streamlit Data Apps | Principles of data storytelling and dashboard layout. **Python Data Viz:** Introduction to **Streamlit** (widgets, state management, caching). Lab: Connect Streamlit to BigQuery/Snowflake and build an interactive data app with filters and plots. |
-| **Day 2** | BI Tool Focus — Day 1 | Tableau, Thoughtspot, Looker |
-| **Day 3** | BI Tool Focus — Day 2 | Tableau, Thoughtspot, Looker |
-| **Day 4** | Comparative BI Architecture | Architectural review: self-service reporting models, semantic layers, data caching/scheduling, and enterprise access controls. |
-| **Day 5** | Capstone Preparation | **Capstone Kickoff:** Dataset reveal (e.g. NYC Taxi or client-specific data), project brief, team formation, and initial exploratory analysis. |
+| **Day 2** | Tableau | Tableau Desktop/Online connected to BigQuery or Snowflake. Calculated fields, LOD expressions, filters, parameters, and dashboard layout. Lab: Build an executive-facing NYC Taxi dashboard. |
+| **Day 3** | ThoughtSpot | ThoughtSpot AI search analytics. SpotIQ auto-insights, Liveboards, embedding basics. Lab: Natural-language queries on the NYC Taxi dataset; compare AI-generated insights to the Tableau dashboard. |
+| **Day 4** | Comparative BI Architecture + Looker (optional) | Architectural review: self-service reporting models, semantic layers, data caching/scheduling, and enterprise access controls. **If time permits:** Looker intro via Google account (LookML explore, a single dashboard). |
+| **Day 5** | Capstone Preparation | **Capstone Kickoff:** Dataset reveal (NYC Taxi or client-specific data), project brief, team formation, and initial exploratory analysis. |
 
-**Weekly Deliverable:** An interactive Python data app (Streamlit) and an enterprise BI dashboard (Client's choice) connected to BigQuery or Snowflake.
+**Weekly Deliverable:** An interactive Python data app (Streamlit) + a Tableau dashboard connected to BigQuery or Snowflake, with a ThoughtSpot Liveboard as a comparison artifact.
 
 ---
 
-### Week 8 — End-to-End Capstone
+### Week 8 — Capstone *(August 10–14)*
 
-**Theme:** Integrating everything — GCP ingestion, Snowflake transformation, BI, PySpark, and GenAI.
+**Theme:** 100% project week — no new instruction. Teams build, integrate, and present their end-to-end pipeline using everything learned in Weeks 1–7.
 
-* **Day 1 — Capstone Kickoff & Architecture:** Teams present and refine their end-to-end architecture diagrams. Roles and sub-team tasks are assigned.
-* **Day 2 — Ingestion Sprint:** Deploying the GCP Ingestion layer (GCS → Dataflow → BigQuery) or PySpark ETL pipeline. *Note: Students are provided with a pre-built Dataflow/PySpark template to customize, focusing on integration rather than writing pipelines from scratch.*
-* **Day 3 — Transformation & Governance Sprint:** Snowflake loading, dbt modeling, data quality assertions (`dbt test`), PII masking rules, and Dataplex lineage tagging.
-* **Day 4 — Analytics, BI & Apps Integration:** Teams split into sub-teams:
-  * *Sub-team A:* Cortex AI/Gemini API enrichment of unstructured text.
-  * *Sub-team B:* Looker/Tableau/Strategy dashboards and Streamlit data apps.
-  * *Integration:* Merging the sub-teams' work at the end of the day.
-* **Day 5 — Final Presentations:** End-to-end demo, architecture walkthrough, and team retrospective.
+> [!NOTE]
+> Week 8 is a pure capstone sprint. The instructor's role shifts to coach/reviewer. No new concepts are introduced. Each day has a loose milestone to keep teams on track, but there are no scheduled lectures.
 
-**Capstone Deliverable:** A fully operational, CI/CD-deployed data analytics pipeline combining GCP ingestion, Snowflake/dbt modeling, PySpark processing, AI-enriched metadata, and a Looker/Tableau/Strategy dashboard or Streamlit app.
+* **Day 1 — Architecture & Kickoff:** Teams finalize architecture diagrams and divide responsibilities. Daily stand-ups begin (15 min). Instructor reviews designs and flags risks.
+* **Day 2 — Ingestion Sprint:** GCS → Dataflow/PySpark ETL → BigQuery or Snowflake. Teams use their own Week 3–5 code as the starting point; a pre-built template is available if needed.
+* **Day 3 — Transformation & Governance Sprint:** Snowflake/dbt modeling, `dbt test`, PII masking, **Knowledge Catalog** lineage tagging.
+* **Day 4 — AI Enrichment + BI/App Integration:** Cortex AI or Gemini API enrichment + Tableau dashboard or Streamlit app wired to the gold layer. Sub-teams merge work by end of day.
+* **Day 5 — Final Presentations:** End-to-end live demo (10 min/team), architecture walkthrough, lessons-learned retrospective.
+
+**Capstone Deliverable:** A fully operational, CI/CD-deployed data analytics pipeline — GCP ingestion, Snowflake/dbt modeling, PySpark processing, AI-enriched metadata, and a Tableau dashboard or Streamlit app — presented live on Day 5.
 
 ---
 
@@ -177,12 +198,12 @@ Instead of disjointed daily exercises, students work on a single continuous pipe
 
 | Category | Primary (GCP-First) | Secondary (AWS) |
 | :--- | :--- | :--- |
-| **Storage** | Google Cloud Storage (GCS) | Amazon S3 |
-| **Warehouse** | **BigQuery** + Snowflake | Amazon Redshift |
-| **Big Data / Spark** | **Databricks**, **GCP Dataproc** | **AWS EMR** |
+| **Storage** | Google Cloud Storage (GCS) | Amazon S3 (+ **S3 Tables**, managed Iceberg) |
+| **Warehouse** | **BigQuery** + Snowflake | Amazon Redshift / SageMaker Lakehouse |
+| **Big Data / Spark** | **Databricks Free Edition**, **GCP Dataproc** | **AWS EMR** |
 | **Pipelines** | **GCP Dataflow, Pub/Sub** | AWS Glue |
-| **AI/ML Platform** | **Vertex AI, Snowflake Cortex AI** | AWS SageMaker, Amazon Bedrock |
-| **Orchestration** | **dbt** + GitHub Actions + Cloud Composer | — |
-| **BI / Viz / Apps** | **Looker**, Tableau, Strategy, ThoughtSpot, **Streamlit** | — |
+| **AI/ML Platform** | **Vertex AI (Gemini Enterprise Agent Platform), Snowflake Cortex AISQL** | AWS SageMaker, Amazon Bedrock |
+| **Orchestration** | **dbt (Fusion + VS Code)** + GitHub Actions + Cloud Composer | — |
+| **BI / Viz / Apps** | **Tableau** (primary), **ThoughtSpot** (secondary), Looker (optional), **Streamlit** | — |
 | **Coding & AI** | **GitHub Copilot**, **Gemini API** | — |
 | **Languages** | Python, SQL, Bash (Linux), PySpark | — |
