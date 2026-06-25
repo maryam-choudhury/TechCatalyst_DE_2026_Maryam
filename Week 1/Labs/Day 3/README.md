@@ -1,7 +1,7 @@
 # Week 1 · Day 3: Lab
 
 **Theme:** Developer foundations — Python environments, then a Git and GitHub deep dive (plus VS Code and Codespaces)
-**Format:** Four guided labs in pairs (navigator and driver, swap every 20 min). Lab A is the new hands-on environments lab; Labs B and C are the Git/GitHub core; Lab D is the fun profile page.
+**Format:** Five guided labs in pairs (navigator and driver, swap every 20 min). Lab A is the new hands-on environments lab; Labs B and C are the Git/GitHub core; Labs D and E are the fun ones — the profile page and your live GitHub Pages site.
 
 > **AI-Free Zone (Weeks 1 to 4).** Type every command yourself. No Copilot, no LLM-generated code, SQL, or Git commands. Read the errors; debug first.
 
@@ -16,6 +16,8 @@
 | [Lab_B_Git_The_Solo_Cycle.md](Lab_B_Git_The_Solo_Cycle.md) | Lab B: build your course repo, the venv + pip baseline, read data, and the local Git cycle (status, add, diff, commit, log) |
 | [Lab_C_GitHub_Remote_and_Collaboration.md](Lab_C_GitHub_Remote_and_Collaboration.md) | Lab C: connect to GitHub — push, pull, clone, fetch (with the 403 fix), then branch, PR, and merge |
 | [Lab_D_Profile_Page.md](Lab_D_Profile_Page.md) | Lab D (Fun Lab): build your GitHub profile / personal branding page |
+| [Lab_E_GitHub_Pages.md](Lab_E_GitHub_Pages.md) | Lab E (Fun Lab): publish a live GitHub Pages welcome + blog site (HTML/CSS theme provided) |
+| [github-pages-template/](github-pages-template/) | Starter theme for Lab E: `index.html`, `style.css`, `posts/first-post.html` |
 | [quiz/Knowledge_Check.md](quiz/Knowledge_Check.md) | Ungraded 12-question check for the wrap-up |
 | [quiz/Day3_Quiz_MarkdownMash.md](quiz/Day3_Quiz_MarkdownMash.md) | The same 12 questions in Markdown Mash format for the live game |
 | [GitHub Troubleshooting.md](GitHub%20Troubleshooting.md) | Common auth, Codespace, and Git errors with fixes |
@@ -30,7 +32,7 @@
 | 10:15 to 11:15 | **Lab A: Python environments & package management** (about 50–60 min) |
 | 1:00 to 1:45 | Lab B: Git, the solo cycle (about 45 min) |
 | 1:45 to 2:45 | Lab C: GitHub — remote & collaboration (about 60 min; Section 2 is time-permitting) |
-| 2:45 to 3:00 | Lab D (Fun Lab): your GitHub profile page (start; finish as homework if needed) |
+| 2:45 to 3:00 | Labs D & E (Fun Labs): your GitHub profile page and GitHub Pages site (start; finish as homework) |
 
 *(Times are a guide. Lab A is the new centerpiece that fixes yesterday's environment confusion — protect the uv section. This cohort knows Git basics, so B runs fast; in Lab C, Parts 1–4 are the must-do core and the branch/PR section is the Week 2 on-ramp.)*
 
@@ -44,6 +46,7 @@
 | 4 | A clone of your repo verified to match (`journal-clone`) | Git history | Lab C | End of day |
 | 5 | *(time-permitting)* About section merged into `main` via a pull request; branch deleted; Q1–Q5 noted | Notes + repo | Lab C | End of day |
 | 6 | A GitHub profile page live at `github.com/<username>` (the `<username>/<username>` repo) | GitHub profile | Lab D | End of day / homework |
+| 7 | A live GitHub Pages site at `https://<username>.github.io/<repo>/` with a welcome page and first post | GitHub Pages site | Lab E | End of day / homework |
 
 ---
 
@@ -55,7 +58,9 @@
 
 **Lab C** **connects local to remote**: push, pull, clone, and fetch/merge (Section 1), then branch, pull request, review, and merge (Section 2), the on-ramp to the shared-repo collaboration and merge conflicts covered in full on Week 2 Day 1.
 
-**Lab D** (the Fun Lab) closes the day by turning everything into a **GitHub profile page** — a personal branding page students grow every week of the program.
+**Lab D** (Fun Lab) turns everything into a **GitHub profile page** — a personal branding page students grow every week of the program.
+
+**Lab E** (Fun Lab) goes one step further: students publish a real **GitHub Pages website** — a themed welcome page plus a mini-blog — from a provided HTML/CSS template. Like the profile, it's a living portfolio they feed with one short post a week, all program long. Both fun labs reinforce today's repo/commit skills with zero Codespace cost.
 
 ## Troubleshooting
 
