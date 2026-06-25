@@ -45,8 +45,8 @@ You will type these names into the Console when you create resources (and reuse 
 | :--- | :--- |
 | Assigned account | `YOUR_ASSIGNED_ACCOUNT_ID` (from your instructor) |
 | Region | `us-east-1` |
-| Raw bucket | `techcatalyst-de-2026-<username>-raw-aws` |
-| Processed bucket | `techcatalyst-de-2026-<username>-processed-aws` |
+| Raw bucket | `techcatalyst-de-2026-<username>-raw` |
+| Processed bucket | `techcatalyst-de-2026-<username>-processed` |
 
 Bucket names are **globally unique across all of AWS**. If a name is taken, add the short suffix supplied by your instructor.
 
@@ -78,17 +78,19 @@ Your assigned account already has the access you need. These quick checks just c
 > [!NOTE]
 > **💻 Also via CLI (optional).** The same identity check from **AWS CloudShell** (the `>_` icon in the console top bar).
 >
-> **Doing the CLI boxes?** Open CloudShell and paste this block **once** at the start of your session. It only defines the names that later CLI boxes reuse — replace the placeholder values with yours. (Staying in the Console? Skip this entirely.)
+> **Doing the CLI boxes?** Open CloudShell and paste this block **once** at the start of your session. (Staying in the Console? Skip this entirely.)
+>
+> **What this block is — and isn't.** It only sets a few **shell variables** (plain text strings) so the later CLI boxes can write `$RAW_BUCKET` instead of making you retype the full name each time. **It does not create or touch anything in AWS** — `export RAW_BUCKET=...` just stores the *name* you'll create later in Part 1 (raw) and Part 2 (processed). It's completely fine that those buckets don't exist yet; you're defining the names up front so the rest of the session is less error-prone. Replace the placeholder values with yours, and if your CloudShell session times out, just paste the block again.
 >
 > ```bash
 > export AWS_ACCOUNT_ID="YOUR_ASSIGNED_ACCOUNT_ID"
 > export USERNAME="YOUR_SHORT_USERNAME"
 > export AWS_REGION="us-east-1"
-> export RAW_BUCKET="techcatalyst-de-2026-${USERNAME}-raw-aws"
-> export PROCESSED_BUCKET="techcatalyst-de-2026-${USERNAME}-processed-aws"
+> export RAW_BUCKET="techcatalyst-de-2026-${USERNAME}-raw"          # created in Part 1
+> export PROCESSED_BUCKET="techcatalyst-de-2026-${USERNAME}-processed"  # created in Part 2
 > ```
 >
-> Then run the identity check:
+> Then run the identity check (these two commands need no buckets — they just report who and where you are):
 >
 > ```bash
 > aws sts get-caller-identity        # Account + ARN of who you are
@@ -101,35 +103,74 @@ Your assigned account already has the access you need. These quick checks just c
 
 *(Mirrors GCS Part 1. GCS "uniform bucket-level access + public access prevention" = S3 "ACLs disabled + Block Public Access," which are the **defaults** for new buckets — you'll verify them rather than toggle them.)*
 
-1. In the S3 console, choose **Create bucket**.
-2. Create `techcatalyst-de-2026-<your-username>-raw-aws` with:
+1. In the S3 console left nav, make sure you're on the **General purpose buckets** page, then choose **Create bucket**.
 
+   > [!IMPORTANT]
+   > **Pick the right bucket type — the S3 console now offers four.** The Create-bucket page (and the S3 left nav) lists **General purpose**, **Directory**, **Table**, and **Vector** buckets. For this lab — and for the vast majority of object-storage / data-lake work — you want **General purpose buckets**. Make sure **Bucket type = General purpose** is selected before continuing. The other three are specialized and out of scope today:
+   > - **General purpose** — the original, all-purpose S3 bucket. Any object, all storage classes, multi-AZ. *This is what a landing zone uses.*
+   > - **Directory** — single-AZ, ultra-low-latency tier (S3 Express One Zone) for hot, high-request workloads.
+   > - **Table** — managed Apache Iceberg tables for analytics/ML (S3 Tables). We mention S3 Tables conceptually in Week 5.
+   > - **Vector** — stores embedding vectors with similarity-search indexes for AI/ML; relevant to Week 6 GenAI, not here.
+
+2. Create `techcatalyst-de-2026-<your-username>-raw` with:
+
+   - Bucket type: **General purpose**
    - AWS Region: **us-east-1**
    - Object Ownership: **ACLs disabled (Bucket owner enforced)** — the default
    - Block Public Access: **Block *all* public access** — the default; leave it on
    - Bucket Versioning: **Disabled** for now (you enable it in Part 3)
    - Default encryption: leave the default (**SSE-S3**)
+   - **Leave every other option at its default** — we only call out the settings that matter for this lab.
 
-3. Upload `coffee.jpg` to the bucket root.
-4. Open the object from the console while signed in (select it → **Open**). It opens because the console generates a short-lived **presigned** request carrying your identity.
+3. Upload `coffee.jpg` to the bucket root. Open the bucket, click **Upload**, then **Add files**, choose `coffee.jpg`, and click **Upload**. Wait for the status to read **Succeeded**, then **Close**.
+
+4. Click the object name **`coffee.jpg`** to open its **object detail page**. This page is the object's *metadata*, not the image itself. Note the fields you'll reuse later:
+
+   - **S3 URI** — `s3://<bucket>/coffee.jpg`. Used by AWS tools and SDKs (`aws s3`, boto3); **not** a web address — a browser cannot open `s3://`.
+   - **Amazon Resource Name (ARN)** — `arn:aws:s3:::<bucket>/coffee.jpg`. Used inside IAM and bucket policies.
+   - **Object URL** — `https://<bucket>.s3.us-east-1.amazonaws.com/coffee.jpg`. An HTTPS link a browser *can* request (whether it's *allowed* is a separate question — that's the next test).
+   - Plus **Size**, **Type**, **Last modified**, and **Storage class**.
+
+   To actually view the image while signed in, click **Open** (or **Download**). It works even though the bucket is private because the console issues a short-lived **presigned** request that carries your identity.
 
 ### Access test
 
-**Predict:** Before testing, write whether the direct object URL will open in an incognito window, and identify which control or identity your prediction depends on.
+**Predict:** Before testing, write whether the **Object URL** will open in an incognito window, and identify which control or identity your prediction depends on.
 
-5. Copy the object's **S3 URI**'s public URL form — `https://<bucket>.s3.us-east-1.amazonaws.com/coffee.jpg` — and open it in an incognito window where you are not signed in. Do **not** change any access setting.
+5. Copy the **Object URL** — the `https://...` link from the detail page. **Do not use the S3 URI:** `s3://` is not a web address and will not open in a browser. Open the Object URL in an incognito window where you are **not** signed in. Do **not** change any access setting.
 
-**Observe and explain:** Record the exact response or error. Compare the identity used by the console (**Open**) request with the identity used by the incognito request.
+**Observe and explain:** Record the exact response or error (you should get **AccessDenied**). Compare the identity used by the console (**Open**) request with the identity used by the incognito request.
 
 **Q2:** Why did the authenticated console action work while the incognito request failed? *(Same answer shape as GCS Q2: authenticated IAM principal vs anonymous caller blocked by Block Public Access.)*
 
-6. Upload `hartford.jpeg` and `intro.docx` under this prefix (type it into the **Create folder** / key path):
+> [!NOTE]
+> **So what would it take to make that Object URL load publicly? (concept — do NOT do this to the lab bucket.)** The `AccessDenied` is the *correct, secure* default. Making the object world-readable takes **two** deliberate changes, because S3 protects you at two layers:
+> 1. **Turn off the relevant Block Public Access settings** on the bucket (Permissions → Block public access → Edit). These are on by default specifically to stop accidental exposure.
+> 2. **Grant anonymous read.** Because this bucket uses **ACLs disabled (Bucket owner enforced)**, you do this with a **bucket policy**, not an object ACL — allow `s3:GetObject` to `Principal: "*"` on `arn:aws:s3:::<bucket>/*`.
+>
+> Only then does the Object URL return the image to an anonymous browser. **To undo:** delete the public bucket policy and re-enable **Block all public access**. In production you almost never make a raw/claims bucket public — you serve files through presigned URLs or a CDN (CloudFront) with Origin Access Control instead. Do this only on a throwaway demo bucket, and only if your instructor asks you to.
+
+6. Place `hartford.jpeg` and `intro.docx` under this prefix:
 
    ```text
    raw/source=classroom/year=2026/month=06/day=22/
    ```
 
-**Q3:** Did S3 create real folders? What does the console tree represent? *(Same as GCS Q3 — keys are flat; the console groups shared prefixes.)*
+   You **cannot paste that whole path into Create folder** — the Console rejects a slash with *"Folder names can't contain `/`."* A folder name is a single key segment; the `/` is what separates segments (see the [S3 object key naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html)). Build the prefix one of two ways:
+
+   - **Console — repeat Create folder per level.** Click **Create folder**, name it `raw`, **Create**; open `raw`, **Create folder** `source=classroom`; open it, **Create folder** `year=2026`; then `month=06`; then `day=22`. Open the deepest folder and **Upload → Add files** to add `hartford.jpeg` and `intro.docx` there. (Each *Create folder* writes a zero-byte placeholder object whose key ends in `/`.)
+   - **CLI — far easier (one command builds the whole key path):**
+
+     ```bash
+     aws s3 cp hartford.jpeg "s3://${RAW_BUCKET}/raw/source=classroom/year=2026/month=06/day=22/hartford.jpeg"
+     aws s3 cp intro.docx     "s3://${RAW_BUCKET}/raw/source=classroom/year=2026/month=06/day=22/intro.docx"
+     ```
+
+     Uploading with a key prefix creates the "folders" implicitly — and writes **no** placeholder objects.
+
+**Q3:** Did S3 create real folders? What does the console tree represent? **How can you verify it?** *(Same as GCS Q3 — keys are flat; the console groups shared prefixes.)*
+
+   To check: open `hartford.jpeg` and read its **Key** / **S3 URI** on the detail page — it's the single flat string `raw/source=classroom/year=2026/month=06/day=22/hartford.jpeg`; the slashes are *inside the key*, not nested directories. Via CLI, `aws s3api list-objects-v2 --bucket "$RAW_BUCKET" --query 'Contents[].Key'` lists flat key strings. The expandable tree in the Console is just the UI grouping keys by their shared prefix up to each `/`. (If you used **Create folder**, you'll also see zero-byte `.../` placeholder keys — those are the only "directory-like" objects, and they're optional.)
 
 7. Verify the bucket's secure posture in the Console: open the bucket → **Permissions** tab. Confirm **Block all public access: On** (all four settings) and **Object Ownership: Bucket owner enforced (ACLs disabled)**.
 

@@ -120,7 +120,25 @@ Checkpoint: the CSV did not gain a stored database schema. BigQuery inferred and
 
 Replace `TABLE_FQID` in both queries with your table's FQID, `YOUR_PROJECT_ID.day4_external.yellow_trip_sample`, leaving the backticks in place.
 
+> [!TIP]
+> **You can drop the project prefix inside your own project.** Console queries run in the context of your selected project, so `day4_external.yellow_trip_sample` resolves to the same table as the full `YOUR_PROJECT_ID.day4_external.yellow_trip_sample`. Both work; the project-qualified FQID is the explicit, portable form (and the one you'd use when querying across projects or from scripts). If `day4_external.yellow_trip_sample` alone fails, confirm the correct project is selected in the project picker.
+
 The pre-run validator/dry-run estimate for an external table may show `0 B`, omit an estimate, or provide only a lower bound because the data is external. Record it as a secondary observation. After **Run**, open **Job information** and use the completed job's actual **bytes processed** as the primary scan observation.
+
+> [!IMPORTANT]
+> **Read the Job information panel after every run.** In the results pane below the editor, click the **Job information** tab (next to **Results**). It reports the job ID, duration, and two numbers you must distinguish:
+>
+> - **Bytes processed** — how much data the query actually scanned. This is the *scan* signal you record in this lab.
+> - **Bytes billed** — what you are charged for, rounded up to a **10 MB minimum per query**.
+>
+> For this tiny sample you will see something like:
+>
+> ```text
+> Bytes processed   409 B
+> Bytes billed      10 MB
+> ```
+>
+> The file is only ~409 bytes, but BigQuery bills a 10 MB floor — so 409 B processed becomes 10 MB billed. This is the concrete proof that **bytes processed ≠ bytes billed**, the point Part 4 returns to. (You may also notice a *Metadata Cache Unused* reason — expected here, since metadata caching is not enabled on this external table.)
 
 ### Query A: preview rows
 
@@ -168,6 +186,9 @@ Complete the comparison:
 | Bytes processed | | |
 | Did fewer output rows guarantee fewer input bytes? | | |
 
+> [!NOTE]
+> **Expect the same bytes processed for both queries — that is the point, not a mistake.** Query A returns only 10 rows and Query B aggregates the whole file, yet both report roughly the same **bytes processed** (≈ 409 B for this sample), and both bill the 10 MB minimum. A row-oriented CSV cannot be pruned by column or stopped early by `LIMIT`: BigQuery must read the whole object either way. So neither selecting fewer columns (Query B reads 2 of 3) nor returning fewer rows (Query A's `LIMIT 10`) reduces the scan. Contrast this with a columnar managed table (Parquet-backed BigQuery storage), where selecting fewer columns *does* cut bytes processed — the motivation for Part 5's load-vs-query-in-place decision.
+
 For external tables, the validator/dry-run value may be `0 B`, unavailable, or a lower bound; do not treat it as the actual scan. The completed job's **bytes processed** is the primary observation. Bytes processed is still not a complete price quote: cache state, billing minimums, and the pricing model can make bytes billed differ.
 
 Compare the two limitations you recorded. Which one would matter most for a repeated production workload, and why? `________________________________________`
@@ -212,7 +233,7 @@ Submit one Markdown file or form response containing:
 3. **Definition metadata:** `uris` locates the object, `format` identifies CSV, and `skip_leading_rows` excludes the header from data rows. The omitted column list causes BigQuery to autodetect the external schema; there is no `autodetect` option in this GoogleSQL DDL.
 4. **Query A:** deterministically returns the first ten rows ordered by `trip_date`, then `PULocationID`, with source columns `PULocationID INT64`, `fare_amount FLOAT64`, and `trip_date DATE`. `LIMIT` controls output, but a row-oriented external CSV may still require scanning the file; this is an appropriate Query A limitation.
 5. **Query B:** returns `trip_date DATE`, `trip_count INT64`, and `total_fare FLOAT64`. All rows contribute. The greatest total is `38.50` on `2025-01-23`; the next totals are `37.00` on `2025-01-18` and `34.40` on `2025-01-21`. A suitable Query B limitation is that every row must be interpreted for the aggregation and CSV does not offer columnar pruning.
-6. **Bytes:** an external-table validator/dry run may show `0 B`, no estimate, or a lower bound. Grade the completed job's **Job information > bytes processed** as the primary observation. Do not grade bytes processed as though they equal bytes billed.
+6. **Bytes:** an external-table validator/dry run may show `0 B`, no estimate, or a lower bound. Grade the completed job's **Job information > bytes processed** as the primary observation. Do not grade bytes processed as though they equal bytes billed. **Expect Query A and Query B to report the same bytes processed (≈ 409 B for the sample file) and the same 10 MB bytes billed.** Because the source is a row-oriented CSV, neither `LIMIT 10` nor selecting fewer columns reduces the scan — the whole object is read both times. The Part 4 row "Did fewer output rows guarantee fewer input bytes?" should be answered **No** for both. A learner who reports markedly different bytes between A and B has likely misread the panel (e.g., bytes billed vs bytes processed) or queried a different table.
 7. **Other accepted limitations:** schema inference/drift, malformed-row sensitivity, weaker repeated-query performance, or dependency on the external object's availability and permissions. Require one relevant limitation after each query; the same limitation may be used twice only when the learner explains its relevance to both.
 8. **Decisions:** the one-time partner quality check is a strong external-table case; the repeated executive dashboard is a strong loaded/curated managed-table case.
 

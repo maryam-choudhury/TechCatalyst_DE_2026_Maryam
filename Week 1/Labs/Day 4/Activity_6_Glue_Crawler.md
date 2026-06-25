@@ -57,7 +57,15 @@ A Crawler runs as an IAM role that can read your S3 data and write to the Glue c
 
 1. Console → **AWS Glue** → left nav **Data Catalog → Crawlers** → **Create crawler**.
 2. **Name:** `techcatalyst-<initials>-crawler`. Next.
-3. **Data source:** *Not yet* mapped to Glue tables → **Add a data source** → **S3** → **In this account** → S3 path `s3://techcatalyst-de-2026-<username>-aws/` (the bucket root, so it finds both prefixes) → **Crawl all sub-folders** → **Add an S3 data source**. Next.
+3. **Data source:** *Not yet* mapped to Glue tables → **Add a data source** → **S3** → **In this account**. Point the crawler at your **two data prefixes** (not the whole bucket) — add them as **two** S3 data sources, each with **Crawl all sub-folders**, clicking **Add an S3 data source** after each:
+
+   - `s3://techcatalyst-de-2026-<username>-aws/taxi_zones/`
+   - `s3://techcatalyst-de-2026-<username>-aws/trip_sample/`
+
+   Then **Next**.
+
+   > [!IMPORTANT]
+   > **Don't point the crawler at the bucket root.** That bucket also holds `athena-results/` (Athena's query output). Crawling the root would catalog those result and binary `.metadata` files as an **extra junk table** — the same "it scans *everything* under the path" trap you saw with the Athena `LOCATION`. Scoping to the two data prefixes avoids it. (If you must use the bucket root, add an **Exclude pattern** of `athena-results/**`.)
 4. **IAM role:** select your Glue service role (instructor-provided or your Appendix role). Next.
 5. **Output → Add database:** create `techcatalyst_<initials>_db`. Back on the crawler page, refresh and select it as the **Target database**.
 6. **Frequency:** **On demand**. Next → **Create crawler**.
@@ -142,6 +150,12 @@ DROP TABLE IF EXISTS trip_sample;
 In the Glue console you can also delete the crawler and the `techcatalyst_<initials>_db` database. Leave the S3 files; your team reuses them.
 
 ## Hints
+
+<details>
+<summary>An extra, unwanted table appeared (e.g. <code>athena_results</code>)</summary>
+
+Your crawler's S3 path included `athena-results/` — almost always because you pointed it at the **bucket root** instead of the two data prefixes. The crawler catalogs Athena's own output (result CSVs + binary `.metadata`) as a table. Fix: re-scope the crawler to just `taxi_zones/` and `trip_sample/` (or add an **Exclude pattern** `athena-results/**`), delete the junk table in the Glue **Tables** list, and re-run.
+</details>
 
 <details>
 <summary>Crawler finishes but creates 0 tables</summary>

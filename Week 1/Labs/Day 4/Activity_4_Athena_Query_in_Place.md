@@ -33,22 +33,33 @@ Columns: `LocationID` (int), `Borough` (string), `Zone` (string), `service_zone`
 
 ## Part 1: Land the file in S3 (5 min)
 
-1. Create the S3 bucket `techcatalyst-de-2026-<your-username>-aws` (or use the one your instructor assigned), then create a prefix `taxi_zones/` in it.
-2. Upload `taxi_zone_lookup.csv` into `s3://<your-bucket>/taxi_zones/`.
+1. Create the S3 bucket `techcatalyst-de-2026-<your-username>-aws` (or use the one your instructor assigned), then create **two** separate top-level prefixes (folders) in it with **Create folder**: `taxi_zones/` (the data) and `athena-results/` (where Athena writes query output — kept separate on purpose; see Part 2). A folder name can't contain `/`, so make each one separately.
+2. Upload `taxi_zone_lookup.csv` into `s3://<your-bucket>/taxi_zones/` — and put **nothing else** in that prefix.
 
 > [!TIP]
 > Keep the CSV in its **own prefix** with nothing else in it. Athena reads **every object under the table's `LOCATION`**, so a folder with stray files will break or pollute your query.
 
 ## Part 2: Point Athena at it (15 min)
 
-3. Open **Athena** in the AWS console. If this is your first time, Athena asks for a **query result location**, set it to a *different* prefix, e.g. `s3://<your-bucket>/athena-results/`. (Athena writes every result here; never the same folder as your data.)
+3. Open **Athena** in the AWS console. The landing page now offers **two** choices:
+
+   - **Query your data in Amazon SageMaker Unified Studio** — the newer unified analytics experience. **Not** what we want today.
+   - **Query your data in Athena** — *"Use Query editor to analyze data on S3, on premises, or on other clouds."* **Choose this one**, then open the **Query editor**.
+
+   **Set the query-result location (one-time).** The editor shows a banner: *"Before you run your first query, you need to set up a query result location in Amazon S3."* Click **Edit settings** → under **Query result settings** click **Manage** → **Browse S3**, pick your bucket, then select the **`athena-results/`** prefix you created in Part 1 → **Choose** → **Save**. The picker won't *create* a folder — that's why you made `athena-results/` in S3 first.
+
+   > [!IMPORTANT]
+   > Athena writes a result file (and a small binary `.metadata` file) **for every query** to this location. It must be a **separate prefix from your data** — never `taxi_zones/`, and never the bucket root if your data sits there. Pointing results at (or overlapping) the data prefix is the **#1 cause of the garbled-output bug** in the Hints below.
+
+   Back in the **Editor**, the left panel shows **Data source: AwsDataCatalog** (correct — that's the Glue Data Catalog) and a **Database** that may default to a sample like `sagemaker_sample_db`. You'll create your own database next and select it there.
+
 4. In the query editor, create a database:
 
    ```sql
    CREATE DATABASE IF NOT EXISTS techcatalyst_<yourname>;
    ```
 
-   Select it in the **Database** dropdown on the left.
+   Then select it in the **Database** dropdown on the left (replacing `sagemaker_sample_db` or whatever was pre-selected). Every statement after this runs against your database.
 5. Define a table **over the file in place**, no data is copied, you're just describing what's already in S3:
 
    ```sql
@@ -106,6 +117,18 @@ Append **Q1 to Q3** to your `day4_lab.md`, plus this one-liner:
 - [ ] Q1 to Q4 in `day4_lab.md`
 
 ## Hints
+
+<details>
+<summary>Hint 0: results start correct, then turn into binary/garbled rows (each counted once)</summary>
+
+The clean rows (Manhattan, Queens, Brooklyn…) are your CSV; the garbled lines are Athena reading a **non-CSV object that also lives under the table's `LOCATION`**. Athena scans **every** object under `taxi_zones/`, and the OpenCSV SerDe parses any bytes it finds as text rows — so a binary file shows up as junk "Borough" values, each counted once.
+
+The usual culprit is **Athena's own output**: a query-result `.csv` *and* a binary `.csv.metadata` file got written **into the data prefix** because the **query-result location was set to `taxi_zones/`** (or a prefix that overlaps it). Fix it:
+
+1. **Settings → Manage** → set **Location of query result** to `s3://<your-bucket>/athena-results/` (a prefix that is **not** under `taxi_zones/`). Save.
+2. In the S3 console, open `taxi_zones/` and **delete everything that isn't `taxi_zone_lookup.csv`** — any `*.csv`, `*.metadata`, result files, or stray uploads.
+3. Re-run the query. The `taxi_zones/` prefix must contain **only** your one CSV.
+</details>
 
 <details>
 <summary>Hint 1: "HIVE_BAD_DATA" or wrong values / header showing as a row</summary>

@@ -59,11 +59,11 @@ Use the bucket from the S3 mirror / Athena stretch.
    s3://techcatalyst-de-2026-<your-username>-aws/trip_sample/yellow_trip_sample.csv
    ```
 
-4. Confirm Athena's query-result location is a **separate** prefix (e.g. `s3://.../athena-results/`). Never point results at your data prefixes.
+4. Confirm Athena's query-result location is a **separate** prefix (e.g. `s3://.../athena-results/`). Never point results at your data prefixes — pointing results at `taxi_zones/` or `trip_sample/` makes Athena scan its own output as rows (the garbled-output bug from [Activity 4](Activity_4_Athena_Query_in_Place.md), Hint 0).
 
 ## Part 2: Create both external tables (~15 min)
 
-5. Open **Athena** → Query editor. Select database `techcatalyst_<yourname>` (create it first if you skipped the stretch).
+5. Open **Athena** → Query editor. (First time in Athena? On the landing page choose **Query your data in Athena** — *not* SageMaker Unified Studio — then set the query-result location to your `athena-results/` prefix; see [Activity 4](Activity_4_Athena_Query_in_Place.md), Part 2.) In the left panel, select database `techcatalyst_<yourname>` (create it first if you skipped the stretch; the dropdown may default to a sample like `sagemaker_sample_db`).
 
 6. Create the **zones** table (skip if you already created `taxi_zones` in the stretch, just verify it exists):
 
