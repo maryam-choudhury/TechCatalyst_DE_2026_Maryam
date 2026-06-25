@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- REPLACE-ME: your post title -->
+  <title>Day 1 of my data engineering journey · REPLACE-ME-YOUR-NAME</title>
+
+  <!-- Note the ../ — this file lives in posts/, so it reaches up one folder for the CSS. -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <a class="brand" href="../index.html">&lt;REPLACE-ME-YOUR-NAME/&gt;</a>
+    <nav class="nav-links">
+      <a href="../index.html#posts">All posts</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light and dark mode">🌙</button>
+    </nav>
+  </header>
+
+  <article class="post">
+    <a class="back" href="../index.html#posts">← Back to all posts</a>
+
+    <!-- REPLACE everything below with your own writing -->
+    <h1>Day 1 of my data engineering journey</h1>
+    <p class="post-meta">June 24, 2026 · Week 1 · 2 min read</p>
+
+    <p>
+      REPLACE-ME — open with why you're here. What made you want to become a data
+      engineer? What are you hoping to get out of TechCatalyst?
+    </p>
+
+    <h2>What I'm learning first</h2>
+    <p>
+      REPLACE-ME — write a few sentences about Week 1: cloud foundations, Git, Python
+      environments, data architecture. What surprised you? What clicked?
+    </p>
+
+    <blockquote>
+      A short quote or takeaway you want to remember goes here.
+    </blockquote>
+
+    <p>
+      You can use inline <code>code</code> like this, add images with
+      <code>&lt;img src="..." /&gt;</code>, and keep writing in plain paragraphs.
+      Markdown isn't needed here — just simple HTML tags.
+    </p>
+
+    <h2>What's next</h2>
+    <p>
+      REPLACE-ME — end with what you're looking forward to next week. Come back and
+      add a new post each Friday.
+    </p>
+
+    <p><a class="back" href="../index.html#posts">← Back to all posts</a></p>
+  </article>
+
+  <footer class="footer">
+    <p>Built by hand for TechCatalyst DE 2026 · Hosted on GitHub Pages</p>
+  </footer>
+
+  <script>
+    // Same theme toggle as the home page, so dark/light stays consistent.
+    const toggle = document.getElementById("theme-toggle");
+    const root = document.documentElement;
+    const saved = localStorage.getItem("theme");
+    if (saved) root.setAttribute("data-theme", saved);
+    syncIcon();
+    toggle.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+      syncIcon();
+    });
+    function syncIcon() {
+      toggle.textContent = root.getAttribute("data-theme") === "dark" ? "🌙" : "☀️";
+    }
+  </script>
+
+</body>
+</html>
