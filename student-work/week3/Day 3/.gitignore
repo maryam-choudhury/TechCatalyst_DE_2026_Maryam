@@ -1,0 +1,4 @@
+__pycache__/
+data/bronze/
+data/silver/
+*.parquet
