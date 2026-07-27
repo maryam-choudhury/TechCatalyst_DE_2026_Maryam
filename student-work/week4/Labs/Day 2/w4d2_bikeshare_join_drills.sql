@@ -38,3 +38,27 @@
 -- INNER JOIN `bigquery-public-data.austin_bikeshare.bikeshare_stations` AS stations
 --   ON trips.start_station_id = stations.station_id
 -- LIMIT 20;
+
+--q5
+
+-- SELECT trips.trip_id, stations.station_id
+-- FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips` AS trips
+-- LEFT JOIN `bigquery-public-data.austin_bikeshare.bikeshare_stations` AS stations
+--   ON trips.start_station_id = stations.station_id
+-- WHERE stations.station_id is NULL;
+
+--q6
+
+
+-- SELECT stations.station_id, count(trips.trip_id) as trip_count
+-- FROM `bigquery-public-data.austin_bikeshare.bikeshare_stations` AS stations
+-- LEFT JOIN `bigquery-public-data.austin_bikeshare.bikeshare_trips` AS trips
+--   ON trips.start_station_id = stations.station_id
+-- --WHERE trips.start_station_name is NULL
+-- GROUP BY stations.station_id
+-- HAVING trip_count = 0
+-- ORDER BY trip_count
+-- LIMIT 25;
+
+-- left join implicitly includes nulls?
+
